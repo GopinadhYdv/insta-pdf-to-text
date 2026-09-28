@@ -182,15 +182,15 @@ export default function Preview({
             )}
 
             {/* Page Footer / Page Numbering */}
-            {pageSetup.pageNumbering !== 'none' && (
-              <div
-                className={`running-footer pt-3 mt-8 border-t border-slate-100 text-slate-400 text-[10px] select-none ${
-                  pageSetup.pageNumbering === 'center' ? 'text-center' : 'text-right'
-                }`}
-              >
-                <span>Page 1 of 1</span>
-              </div>
-            )}
+            <div className="running-footer pt-3 mt-8 border-t border-slate-100 text-slate-400 text-[10px] select-none grid grid-cols-3 items-center">
+              <span className="justify-self-start font-semibold tracking-wider">SIGMA</span>
+              {pageSetup.pageNumbering === 'center' && (
+                <span className="justify-self-center">Page 1 of 1</span>
+              )}
+              {pageSetup.pageNumbering === 'right' && (
+                <span className="justify-self-end">Page 1 of 1</span>
+              )}
+            </div>
           </div>
         </div>
       </div>

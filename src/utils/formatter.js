@@ -296,7 +296,7 @@ Review meeting scheduled for 2026-10-15 at 10:00 AM.
 Note: Please ensure all team pull requests are merged prior to code freeze.`,
 
   projectProposal: `PROJECT PROPOSAL: VECTOR DOCUMENT ENGINE
-Author: Antigravity Systems Group
+Author: SIGMA
 Status: Approved for Production
 Target Release: Q4 2026
 

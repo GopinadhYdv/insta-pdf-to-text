@@ -50,7 +50,7 @@ export default function App() {
     pageSize: 'a4',
     orientation: 'portrait',
     marginMm: 20,
-    runningHeader: 'Insta Document • Antigravity Systems',
+    runningHeader: 'Insta Document • SIGMA',
     pageNumbering: 'right'
   });
 
