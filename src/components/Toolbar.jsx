@@ -54,9 +54,9 @@ export default function Toolbar({
   ];
 
   const marginPresets = [
-    { label: 'Compact', value: 15 },
-    { label: 'Standard', value: 25 },
-    { label: 'Wide', value: 35 },
+    { label: 'Narrow', value: 10 },
+    { label: 'Normal', value: 20 },
+    { label: 'Wide', value: 25 },
   ];
 
   const toggleFormat = (key) => {

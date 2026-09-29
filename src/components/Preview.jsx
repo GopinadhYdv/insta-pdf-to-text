@@ -21,7 +21,10 @@ export default function Preview({
   onBrowserPrint,
   paperRef
 }) {
-  const [zoomLevel, setZoomLevel] = useState(100); // 50 to 150%
+  const [zoomLevel, setZoomLevel] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) return 50;
+    return 100;
+  }); // 50 to 150%
   const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef(null);
 
@@ -182,15 +185,19 @@ export default function Preview({
             )}
 
             {/* Page Footer / Page Numbering */}
-            <div className="running-footer pt-3 mt-8 border-t border-slate-100 text-slate-400 text-[10px] select-none grid grid-cols-3 items-center">
-              <span className="justify-self-start font-semibold tracking-wider">SIGMA</span>
-              {pageSetup.pageNumbering === 'center' && (
-                <span className="justify-self-center">Page 1 of 1</span>
-              )}
-              {pageSetup.pageNumbering === 'right' && (
-                <span className="justify-self-end">Page 1 of 1</span>
-              )}
-            </div>
+            {pageSetup.pageNumbering !== 'none' && (
+              <div className="running-footer pt-3 mt-8 border-t border-slate-100 text-slate-400 text-[10px] select-none grid grid-cols-3 items-center">
+                <span className="justify-self-start font-medium tracking-wide truncate">
+                  {documentTitle || ''}
+                </span>
+                {pageSetup.pageNumbering === 'center' && (
+                  <span className="justify-self-center">Page 1</span>
+                )}
+                {pageSetup.pageNumbering === 'right' && (
+                  <span className="justify-self-end">Page 1</span>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -49,8 +49,8 @@ export default function App() {
   const [pageSetup, setPageSetup] = useState({
     pageSize: 'a4',
     orientation: 'portrait',
-    marginMm: 20,
-    runningHeader: 'Insta Document • SIGMA',
+    marginMm: 10,
+    runningHeader: '',
     pageNumbering: 'right'
   });
 
@@ -205,9 +205,9 @@ export default function App() {
       />
 
       {/* Main Split-Screen Workspace */}
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-2 overflow-hidden relative">
+      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         {/* Left Panel: Editor & Stats */}
-        <section className="h-full overflow-hidden editor-panel">
+        <section className="h-1/2 lg:h-full lg:w-1/2 flex-shrink-0 lg:flex-shrink overflow-hidden editor-panel border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 z-10">
           <Editor
             rawText={rawText}
             setRawText={setRawText}
@@ -218,7 +218,7 @@ export default function App() {
         </section>
 
         {/* Right Panel: Realistic Live A4/Letter Preview */}
-        <section className="h-full overflow-hidden">
+        <section className="flex-1 lg:h-full lg:w-1/2 overflow-hidden bg-slate-200/70 dark:bg-slate-950/80">
           <Preview
             htmlContent={formattedState.htmlContent}
             typography={typography}

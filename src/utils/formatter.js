@@ -97,14 +97,17 @@ export function formatText(rawText, options = defaultFormatOptions) {
       const isBulletOrList = /^([*\-+•–]|\d+[\.\)])\s+/.test(trimmed);
       const endsWithPunctuation = /[.,;:!?]$/.test(trimmed);
       const isShort = trimmed.length > 2 && trimmed.length < 65;
+      // Lines like "Date: value", "Author: name" — skip as heading candidates
+      const isMetadataLine = /^[A-Za-z\s]{2,30}:\s+\S/.test(trimmed);
 
       // Check ALL CAPS Heading (at least 4 letters, no lower case letters, standalone short line)
       const isAllCaps = options.promoteAllCapHeadings &&
         isShort &&
         !endsWithPunctuation &&
         !isBulletOrList &&
+        !isMetadataLine &&
         /^[A-Z0-9\s\-_–—:]{4,}$/.test(trimmed) &&
-        /[A-Z]/.test(trimmed);
+        /[A-Z]{2,}/.test(trimmed); // require at least 2 consecutive caps
 
       // Check Roman Numeral Heading
       const romanMatch = options.promoteNumberedHeadings && trimmed.match(romanNumeralRegex);
@@ -113,10 +116,14 @@ export function formatText(rawText, options = defaultFormatOptions) {
       const numberedMatch = options.promoteNumberedHeadings && trimmed.match(numberedHeadingRegex);
 
       // Check Short Unpunctuated standalone title
+      // Requires: capital start, at least 2 words OR single word >= 5 chars, blank lines around it
+      const wordCount = trimmed.split(/\s+/).length;
       const isShortUnpunctuated = options.promoteShortUnpunctuated &&
         isShort &&
         !endsWithPunctuation &&
         !isBulletOrList &&
+        !isMetadataLine &&
+        (wordCount >= 2 || trimmed.length >= 5) &&
         /^[A-Z]/.test(trimmed) && // Starts with capital letter
         (i === 0 || lines[i - 1].trim() === '') && // Preceded by empty line or top of file
         (i === lines.length - 1 || lines[i + 1].trim() === ''); // Followed by empty line or EOF
@@ -142,16 +149,19 @@ export function formatText(rawText, options = defaultFormatOptions) {
     // Smart Auto-Bolding
     // Check if line is not a heading
     if (!line.trim().startsWith('#')) {
-      // 1. Bold terms before colons (e.g. "Note:", "Important:", "Key Finding:")
+      // 1. Bold terms before colons — only at start of line or after bullet dash
+      //    e.g. "Note: ..." or "- Key: ..." but NOT mid-sentence "hello: world"
       if (options.boldTermsBeforeColon) {
-        // Avoid matching http:// or URLs or time like 10:30
-        line = line.replace(/(^|[\s\-\*\d\.\)])([A-Za-z0-9\s/_\-]{2,25}):(?!\/\/|\d)/g, '$1**$2:**');
+        // Match label-style: start of line OR after "- ", then 1-4 words, then colon
+        line = line.replace(/^(-\s+)?([A-Z][A-Za-z0-9\s\/\-]{1,30}):(?!\/\/|\d)/, (match, dash, label) => {
+          return `${dash || ''}**${label}:**`;
+        });
       }
 
       // 2. Bold leading bullet words if enabled and not already bolded
       if (options.boldLeadingBulletWords && /^-\s+/.test(line)) {
         // If the bullet starts with 1-3 words followed by a colon or hyphen:
-        line = line.replace(/^(-\s+)(?![\*#])([A-Z][a-zA-Z0-9]*(?:\s+[a-zA-Z0-9]+){0,2})(:|\s+-\s+)/, '$1**$2**$3');
+        line = line.replace(/^(-\s+)(?![\*#])([A-Z][a-zA-Z0-9]*(?:\s+[a-zA-Z0-9]+){0,2})(:|(\s+-\s+))/, '$1**$2**$3');
       }
 
       // 3. Bold Milestone tags
@@ -173,6 +183,7 @@ export function formatText(rawText, options = defaultFormatOptions) {
 
     processedLines.push(line);
   }
+
 
   const formattedMarkdown = processedLines.join('\n');
 
